@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"net/http" // for HTTP status codes
@@ -27,7 +27,7 @@ func ClickHandler(c *gin.Context) {
 	// Update stars based on the click
 	playerState.Stars += playerState.StarsPerClick
 
-	// Check if the player has enough stars to upgrade
+	// Upgrading the jar if enough stars are available
 	if playerState.Stars >= playerState.UpgradeCost {
 		playerState.JarLevel++
 		playerState.Stars -= playerState.UpgradeCost
