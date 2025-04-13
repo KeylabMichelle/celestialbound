@@ -1,0 +1,17 @@
+# Binaries and build artifacts
+*.exe
+*.out
+*.test
+bin/
+pkg/
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Secrets and envs
+*.pem
+.env
