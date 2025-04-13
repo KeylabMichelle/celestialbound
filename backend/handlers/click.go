@@ -27,6 +27,13 @@ func ClickHandler(c *gin.Context) {
 	// Update stars based on the click
 	playerState.Stars += playerState.StarsPerClick
 
+	// Update stars in jar (just jar 1 for now)
+	jar := &playerState.Jars[0] // reference to the struct value
+	// Update stars in the jar
+	jar.StarsStored += playerState.StarsPerClick
+
+	// TODO: Check if jar is full and handle overflow
+
 	// Upgrading the jar if enough stars are available
 	if playerState.Stars >= playerState.UpgradeCost {
 		playerState.JarLevel++
