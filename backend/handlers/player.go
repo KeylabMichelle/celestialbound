@@ -54,3 +54,19 @@ func CreatePlayerHandler(c *gin.Context) {
 	// Return the new player state
 	c.JSON(http.StatusCreated, newPlayer)
 }
+
+func GetPlayerHandler(c *gin.Context) {
+
+	//Get player ID from the request
+	playerID := c.Param("player_id")
+
+	//Check if the player exists
+	playerState, exists := playerStates[playerID]
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	// Return the player state
+	c.JSON(http.StatusOK, playerState)
+}

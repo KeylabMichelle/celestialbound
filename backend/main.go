@@ -9,9 +9,9 @@ func main() {
 	router := gin.Default()
 
 	// Define routes
-	router.POST("/player", handlers.CreatePlayerHandler)    // Endpoint to create a new player
-	router.POST("/click/:player_id", handlers.ClickHandler) // Endpoint to handle clicks
-	// TODO: Get player state
+	router.POST("/player", handlers.CreatePlayerHandler)        // Endpoint to create a new player
+	router.POST("/click/:player_id", handlers.ClickHandler)     // Endpoint to handle clicks
+	router.GET("/player/:player_id", handlers.GetPlayerHandler) // Endpoint to get player state
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
