@@ -70,3 +70,69 @@ func GetPlayerHandler(c *gin.Context) {
 	// Return the player state
 	c.JSON(http.StatusOK, playerState)
 }
+
+func GetAllPlayersHandler(c *gin.Context) {
+	var players []*models.PlayerState
+	for _, player := range playerStates {
+		players = append(players, player)
+	}
+	c.JSON(http.StatusOK, players)
+}
+
+func DeletePlayerHandler(c *gin.Context) {
+	//Get player ID from the request
+	playerID := c.Param("player_id")
+
+	//Get player name linked to the ID
+	playerName := playerStates[playerID].PlayerName
+
+	//Check if the player exists
+	_, exists := playerStates[playerID]
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	// Delete the player state
+	delete(playerStates, playerID)
+
+	// Return success message with player name
+	c.JSON(http.StatusOK, gin.H{"message": "Player deleted successfully", "player_name": playerName, "player_id": playerID})
+}
+
+func UpdatePlayerHandler(c *gin.Context) {
+	//Get player ID from the request
+	playerID := c.Param("player_id")
+
+	//Check if the player exists
+	playerState, exists := playerStates[playerID]
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	// Parse incoming JSON request
+	var input struct {
+		PlayerName string `json:"player_name"`
+		Stars      int    `json:"stars" `
+		JarLevel   int    `json:"jar_level"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	// Update player state
+	if input.PlayerName != "" { // Allow change of name
+		playerState.PlayerName = input.PlayerName
+	}
+	if input.Stars >= 0 { // Allow stars reset
+		playerState.Stars = input.Stars
+	}
+	if input.JarLevel > 0 { // Allow jar level reset (base Jar level is 1)
+		playerState.JarLevel = input.JarLevel
+	}
+
+	// Return the updated player state
+	c.JSON(http.StatusOK, playerState)
+}

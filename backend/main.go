@@ -8,10 +8,15 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Define routes
-	router.POST("/player", handlers.CreatePlayerHandler)        // Endpoint to create a new player
-	router.POST("/click/:player_id", handlers.ClickHandler)     // Endpoint to handle clicks
-	router.GET("/player/:player_id", handlers.GetPlayerHandler) // Endpoint to get player state
+	/* Routes for player.go */
+	router.POST("/player", handlers.CreatePlayerHandler)              // Endpoint to create a new player
+	router.GET("/player/:player_id", handlers.GetPlayerHandler)       // Endpoint to get player state
+	router.GET("/players", handlers.GetAllPlayersHandler)             // Endpoint to get all players
+	router.DELETE("/player/:player_id", handlers.DeletePlayerHandler) // Endpoint to delete a player
+	router.PUT("/player/:player_id", handlers.UpdatePlayerHandler)    // Endpoint to update player Name, Stars and JarLevel
+
+	/* Routes for click.go */
+	router.POST("/click/:player_id", handlers.ClickHandler) // Endpoint to handle clicks (add stars)
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
