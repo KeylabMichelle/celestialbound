@@ -4,12 +4,7 @@ import (
 	"net/http" // for HTTP status codes
 
 	"github.com/gin-gonic/gin"
-	"github.com/keylab/celestialbound/backend/models"
-	"github.com/keylab/celestialbound/backend/utils"
 )
-
-// In-memory storage for player states
-var playerStates = make(map[string]*models.PlayerState)
 
 func ClickHandler(c *gin.Context) {
 
@@ -33,13 +28,6 @@ func ClickHandler(c *gin.Context) {
 	jar.StarsStored += playerState.StarsPerClick
 
 	// TODO: Check if jar is full and handle overflow
-
-	// Upgrading the jar if enough stars are available
-	if playerState.Stars >= playerState.UpgradeCost {
-		playerState.JarLevel++
-		playerState.Stars -= playerState.UpgradeCost
-		playerState.UpgradeCost = utils.CalculateUpgradeCost(playerState.JarLevel)
-	}
 
 	//Return update to player state
 	c.JSON(http.StatusOK, playerState)

@@ -22,8 +22,12 @@ func CreatePlayerHandler(c *gin.Context) {
 	// Generate a unique PlayerID
 	playerID := uuid.New().String()
 
+	//Generate Jar unique ID
+	jarID := uuid.New().String()
+
 	// Default jar
 	starterJar := models.Jar{
+		JarID:          jarID,
 		JarLevel:       1,
 		StarsStored:    0,
 		StarsPerSecond: 2,
@@ -36,7 +40,6 @@ func CreatePlayerHandler(c *gin.Context) {
 		PlayerID:       playerID,
 		PlayerName:     input.PlayerName,
 		Stars:          0,
-		JarLevel:       1,
 		StarsPerClick:  1,
 		StarsPerSecond: 2,
 		UpgradeCost:    100,
@@ -115,7 +118,6 @@ func UpdatePlayerHandler(c *gin.Context) {
 	var input struct {
 		PlayerName string `json:"player_name"`
 		Stars      int    `json:"stars" `
-		JarLevel   int    `json:"jar_level"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -128,9 +130,6 @@ func UpdatePlayerHandler(c *gin.Context) {
 	}
 	if input.Stars >= 0 { // Allow stars reset
 		playerState.Stars = input.Stars
-	}
-	if input.JarLevel > 0 { // Allow jar level reset (base Jar level is 1)
-		playerState.JarLevel = input.JarLevel
 	}
 
 	// Return the updated player state

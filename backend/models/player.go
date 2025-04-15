@@ -15,7 +15,6 @@ type PlayerState struct {
 	// --- Game state ---
 	Stars          int   `json:"stars"`            // Core currency
 	Jars           []Jar `json:"jars"`             // List of jars owned by the player
-	JarLevel       int   `json:"jar_level"`        // Current level of the jar (0-10)
 	StarsPerClick  int   `json:"stars_per_click"`  // Stars to add per click (manual action)
 	StarsPerSecond int   `json:"stars_per_second"` // Stars gained per second (Passive action)
 	UpgradeCost    int   `json:"upgrade_cost"`     // Cost for next upgrade of the jar

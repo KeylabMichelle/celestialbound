@@ -15,6 +15,10 @@ func main() {
 	router.DELETE("/player/:player_id", handlers.DeletePlayerHandler) // Endpoint to delete a player
 	router.PUT("/player/:player_id", handlers.UpdatePlayerHandler)    // Endpoint to update player Name, Stars and JarLevel
 
+	/* Jars on players */
+	router.POST("/player/:player_id/jar", handlers.CreateNewJarHandler) // Endpoint to create a new jar for a player
+	router.GET("/player/:player_id/jars", handlers.GetAllJarsHandler)   // Endpoint to get jar state
+
 	/* Routes for click.go */
 	router.POST("/click/:player_id", handlers.ClickHandler) // Endpoint to handle clicks (add stars)
 
