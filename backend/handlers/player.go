@@ -18,34 +18,47 @@ func CreatePlayerHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"player_id": playerService.CreatePlayer(input.PlayerName)})
+
+	newPlayer, err := playerService.CreatePlayer(input.PlayerName)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"player_id": newPlayer})
 
 }
 
 func GetPlayerHandler(c *gin.Context) {
 	playerID := c.Param("player_id")
-	player := playerService.GetPlayer(playerID)
-	if player == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+
+	player, err := playerService.GetPlayer(playerID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, player)
 }
 
 func GetAllPlayersHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, playerService.GetAllPlayers())
-}
 
-func UpdatePlayerHandler(c *gin.Context) {
-	/* Check if player exists */
-	playerID := c.Param("player_id")
-	player := playerService.GetPlayer(playerID)
-	if player == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+	players, err := playerService.GetAllPlayers()
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	/* If it exists parse the input and check for error */
+	c.JSON(http.StatusOK, players)
+
+}
+
+func UpdatePlayerNameHandler(c *gin.Context) {
+	playerID := c.Param("player_id")
+
 	var input struct {
 		PlayerName string `json:"player_name" binding:"required"`
 	}
@@ -54,20 +67,23 @@ func UpdatePlayerHandler(c *gin.Context) {
 		return
 	}
 
-	/* Update the player name */
-	playerService.UpdatePlayerName(playerID, input.PlayerName)
+	err := playerService.UpdatePlayerName(playerID, input.PlayerName)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Player updated"})
 }
 
 func DeletePlayerHandler(c *gin.Context) {
 	playerID := c.Param("player_id")
-	player := playerService.GetPlayer(playerID)
-	if player == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+	err := playerService.DeletePlayer(playerID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-
-	playerService.DeletePlayer(playerID)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Player deleted"})
 }

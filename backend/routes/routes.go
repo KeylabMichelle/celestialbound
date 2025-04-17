@@ -21,7 +21,7 @@ func SetupRoutes() *gin.Engine {
 		playerGroup.POST("/", handlers.CreatePlayerHandler)
 		playerGroup.GET("/", handlers.GetAllPlayersHandler)
 		playerGroup.GET("/:player_id", handlers.GetPlayerHandler)
-		playerGroup.PUT("/:player_id", handlers.UpdatePlayerHandler)
+		playerGroup.PUT("/:player_id", handlers.UpdatePlayerNameHandler)
 		playerGroup.DELETE("/:player_id", handlers.DeletePlayerHandler)
 	}
 
