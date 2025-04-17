@@ -48,7 +48,7 @@ echo "------------------------------------------------------------------"
 echo "Updating player info..."
 curl -s -X PUT "$BASE_URL/player/$PLAYER_ID" \
   -H "Content-Type: application/json" \
-  -d '{"player_name": "UpdatedName", "stars": 100}' | jq
+  -d '{"player_name": "UpdatedName"}' | jq
 echo "------------------------------------------------------------------"
 
 # Get All Players

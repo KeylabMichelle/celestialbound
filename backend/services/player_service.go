@@ -1,10 +1,8 @@
 package services
 
 import (
-	"net/http" // for HTTP status codes
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/keylab/celestialbound/backend/models"
 	"github.com/keylab/celestialbound/backend/utils"
 )
@@ -12,16 +10,9 @@ import (
 // In-memory storage for player states
 var playerStates = make(map[string]*models.Player)
 
-func CreatePlayerService(c *gin.Context) {
-	// Parse incoming JSON request
-	var input struct {
-		PlayerName string `json:"player_name" binding:"required"`
-	}
+type PlayerService struct{}
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
+func (playerService *PlayerService) CreatePlayer(playerName string) string {
 
 	// Generate a unique PlayerID
 	playerID := utils.GenerateUniqueID()
@@ -42,7 +33,7 @@ func CreatePlayerService(c *gin.Context) {
 	// Initialize player state
 	newPlayer := &models.Player{
 		PlayerID:      playerID,
-		PlayerName:    input.PlayerName,
+		PlayerName:    playerName,
 		Stars:         0,
 		StarsPerClick: 1,
 		Jars:          []models.Jar{starterJar},
@@ -56,84 +47,27 @@ func CreatePlayerService(c *gin.Context) {
 	// Store the new player state
 	playerStates[playerID] = newPlayer // This changes later when there is a DB
 
-	// Return the new player state
-	c.JSON(http.StatusCreated, newPlayer)
+	return newPlayer.PlayerID
 }
 
-func GetPlayerService(c *gin.Context) {
-
-	//Get player ID from the request
-	playerID := c.Param("player_id")
-
-	//Check if the player exists
-	playerState, exists := playerStates[playerID]
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
-		return
-	}
-
-	// Return the player state
-	c.JSON(http.StatusOK, playerState)
+func (playerService *PlayerService) GetPlayer(playerID string) *models.Player {
+	return playerStates[playerID]
 }
 
-func GetAllPlayersService(c *gin.Context) {
-	var players []*models.Player
+func (playerService *PlayerService) GetAllPlayers() []*models.Player {
+	players := make([]*models.Player, 0, len(playerStates))
 	for _, player := range playerStates {
 		players = append(players, player)
 	}
-	c.JSON(http.StatusOK, players)
+	return players
 }
 
-func DeletePlayerService(c *gin.Context) {
-	//Get player ID from the request
-	playerID := c.Param("player_id")
-
-	//Get player name linked to the ID
-	playerName := playerStates[playerID].PlayerName
-
-	//Check if the player exists
-	_, exists := playerStates[playerID]
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
-		return
-	}
-
+func (playerService *PlayerService) DeletePlayer(playerID string) {
 	// Delete the player state
 	delete(playerStates, playerID)
 
-	// Return success message with player name
-	c.JSON(http.StatusOK, gin.H{"message": "Player deleted successfully", "player_name": playerName, "player_id": playerID})
 }
 
-func UpdatePlayerService(c *gin.Context) {
-	//Get player ID from the request
-	playerID := c.Param("player_id")
-
-	//Check if the player exists
-	playerState, exists := playerStates[playerID]
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
-		return
-	}
-
-	// Parse incoming JSON request
-	var input struct {
-		PlayerName string `json:"player_name"`
-		Stars      int    `json:"stars" `
-	}
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	// Update player state
-	if input.PlayerName != "" { // Allow change of name
-		playerState.PlayerName = input.PlayerName
-	}
-	if input.Stars >= 0 { // Allow stars reset
-		playerState.Stars = input.Stars
-	}
-
-	// Return the updated player state
-	c.JSON(http.StatusOK, playerState)
+func (playerService *PlayerService) UpdatePlayerName(playerID string, playerName string) {
+	playerStates[playerID].PlayerName = playerName
 }
