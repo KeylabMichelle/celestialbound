@@ -4,6 +4,7 @@ package services
 
 import (
 	"net/http" // for HTTP status codes
+	"time"     //
 
 	"github.com/gin-gonic/gin"
 	"github.com/keylab/celestialbound/backend/models"
@@ -29,6 +30,9 @@ func CreateNewJarService(c *gin.Context) {
 		StarsPerSecond: 2,
 		UpgradeCost:    100,
 		MaxCapacity:    500,
+		// -- Boost mechanics (for future use) ---
+		PassiveMultiplier:     1.0,
+		PassiveBoostExpiresAt: time.Time{},
 	}
 
 	// Append the new jar to the player's jar slice by updating the map directly

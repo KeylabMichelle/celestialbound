@@ -2,6 +2,7 @@ package services
 
 import (
 	"net/http" // for HTTP status codes
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keylab/celestialbound/backend/models"
@@ -40,18 +41,16 @@ func CreatePlayerService(c *gin.Context) {
 
 	// Initialize player state
 	newPlayer := &models.PlayerState{
-		PlayerID:       playerID,
-		PlayerName:     input.PlayerName,
-		Stars:          0,
-		StarsPerClick:  1,
-		StarsPerSecond: 2,
-		UpgradeCost:    100,
-		Jars:           []models.Jar{starterJar},
+		PlayerID:      playerID,
+		PlayerName:    input.PlayerName,
+		Stars:         0,
+		StarsPerClick: 1,
+		Jars:          []models.Jar{starterJar},
 		// -- Boost mechanics (for future use) ---
-		/* ClickMultiplier:     1.0,
-		ClickBoostExpiresAt: time.Time{},
+		ClickMultiplier:       1.0,
+		ClickBoostExpiresAt:   time.Time{},
 		PassiveMultiplier:     1.0,
-		PassiveBoostExpiresAt: time.Time{}, */
+		PassiveBoostExpiresAt: time.Time{},
 	}
 
 	// Store the new player state
