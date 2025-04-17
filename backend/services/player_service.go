@@ -10,7 +10,7 @@ import (
 )
 
 // In-memory storage for player states
-var playerStates = make(map[string]*models.PlayerState)
+var playerStates = make(map[string]*models.Player)
 
 func CreatePlayerService(c *gin.Context) {
 	// Parse incoming JSON request
@@ -40,7 +40,7 @@ func CreatePlayerService(c *gin.Context) {
 	}
 
 	// Initialize player state
-	newPlayer := &models.PlayerState{
+	newPlayer := &models.Player{
 		PlayerID:      playerID,
 		PlayerName:    input.PlayerName,
 		Stars:         0,
@@ -77,7 +77,7 @@ func GetPlayerService(c *gin.Context) {
 }
 
 func GetAllPlayersService(c *gin.Context) {
-	var players []*models.PlayerState
+	var players []*models.Player
 	for _, player := range playerStates {
 		players = append(players, player)
 	}

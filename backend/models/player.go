@@ -7,7 +7,7 @@ package models
 
 import "time"
 
-type PlayerState struct {
+type Player struct {
 	// --- Player information ---
 	PlayerID   string `json:"player_id"`   // Unique identifier for the player
 	PlayerName string `json:"player_name"` // Name of the player
