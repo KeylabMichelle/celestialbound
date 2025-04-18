@@ -3,23 +3,20 @@
 package services
 
 import (
-	"net/http" // for HTTP status codes
-	"time"     //
+	"errors" // for HTTP status codes
+	"time"   //
 
-	"github.com/gin-gonic/gin"
 	"github.com/keylab/celestialbound/backend/models"
 	"github.com/keylab/celestialbound/backend/utils"
 )
 
-func CreateNewJarService(c *gin.Context) {
-	// Extract PlayerID from the request
-	playerID := c.Param("player_id")
+type JarService struct{}
 
-	// Try to get a pointer to the actual player state
-	playerState, exists := playerStates[playerID]
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
-		return
+func (jarService *JarService) CreateNewJar(playerID string) error {
+
+	// Check if playerID exists in the map
+	if playerStates[playerID] == nil {
+		return errors.New("player not found")
 	}
 
 	// Create a new jar with default values
@@ -35,24 +32,19 @@ func CreateNewJarService(c *gin.Context) {
 		PassiveBoostExpiresAt: time.Time{},
 	}
 
-	// Append the new jar to the player's jar slice by updating the map directly
-	playerStates[playerID].Jars = append(playerState.Jars, newJar)
+	// Add the new jar to the player's jars
+	playerState := playerStates[playerID]
+	playerState.Jars = append(playerState.Jars, newJar)
 
-	// Return the newly added jar
-	c.JSON(http.StatusOK, newJar)
+	return nil
 }
 
-func GetAllJarsService(c *gin.Context) {
-	//Get player ID from the request
-	playerID := c.Param("player_id")
+func (JarService *JarService) GetAllJars(playerID string) ([]models.Jar, error) {
 
-	//Check if the player exists
-	playerState, exists := playerStates[playerID]
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
-		return
+	// Check if playerID exists in the map
+	if playerStates[playerID] == nil {
+		return nil, errors.New("player not found")
 	}
-
-	// Return the jar state
-	c.JSON(http.StatusOK, playerState.Jars)
+	// Return the jars of the player
+	return playerStates[playerID].Jars, nil
 }
