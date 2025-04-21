@@ -12,61 +12,64 @@ RESPONSE=$(curl -s -X POST "$BASE_URL/player/" \
   -d '{"player_name": "TestPlayer"}')
 
 PLAYER_ID=$(echo $RESPONSE | jq -r '.player_id')
-PLAYER_NAME=$(echo $RESPONSE | jq -r '.player_name')
-echo "Created Player ID: $PLAYER_ID and Name: $PLAYER_NAME"
+echo "Created Player ID: $PLAYER_ID"
 
 echo "------------------------------------------------------------------"
 
 # Get Player by ID
-echo "------------------------------------------------------------------"
 echo "Getting player info..."
 curl -s "$BASE_URL/player/$PLAYER_ID" | jq
 echo "------------------------------------------------------------------"
 
-
-# Click to Add Stars
-echo "------------------------------------------------------------------"
-echo "Clicking for stars..."
-curl -s -X POST "$BASE_URL/click/$PLAYER_ID" | jq
-echo "------------------------------------------------------------------"
-
-
 # Create a New Jar
-echo "------------------------------------------------------------------"
 echo "Creating a new jar..."
 curl -s -X POST "$BASE_URL/player/$PLAYER_ID/jar/" | jq
 echo "------------------------------------------------------------------"
 
 # Get All Jars
-echo "------------------------------------------------------------------"
 echo "Getting all jars..."
-curl -s "$BASE_URL/player/$PLAYER_ID/jar/" | jq
+JARS=$(curl -s "$BASE_URL/player/$PLAYER_ID/jar/")
+echo "$JARS" | jq
 echo "------------------------------------------------------------------"
 
-# Update Player Name and Stars
+# Extract first JarID
+JAR_ID=$(echo "$JARS" | jq -r '.[0].jar_id')
+echo "Target Jar ID: $JAR_ID"
+
+# Click on the specific Jar
+echo "Clicking on jar to generate stars..."
+RESPONSE=$(curl -s -X POST "$BASE_URL/player/$PLAYER_ID/jar/$JAR_ID/click")
+STARS=$(echo "$RESPONSE" | jq -r '.stars_stored')
+echo "Stars stored in jar after click: $STARS"
 echo "------------------------------------------------------------------"
-echo "Updating player info..."
+
+# Get All Jars
+echo "Getting all jars..."
+JARS=$(curl -s "$BASE_URL/player/$PLAYER_ID/jar/")
+echo "$JARS" | jq
+echo "------------------------------------------------------------------"
+
+
+# Update Player Name
+echo "Updating player name..."
 curl -s -X PUT "$BASE_URL/player/$PLAYER_ID" \
   -H "Content-Type: application/json" \
   -d '{"player_name": "UpdatedName"}' | jq
 echo "------------------------------------------------------------------"
 
-# Get All Players
-echo "------------------------------------------------------------------"
+# List All Players
 echo "Listing all players..."
 curl -s "$BASE_URL/player/" | jq
 echo "------------------------------------------------------------------"
 
 # Delete Player
-echo "------------------------------------------------------------------"
 echo "Deleting player..."
 curl -s -X DELETE "$BASE_URL/player/$PLAYER_ID" | jq
 echo "------------------------------------------------------------------"
 
-# Get All Players to make sure it was deleted
-echo "------------------------------------------------------------------"
-echo "Listing all players..."
+# Confirm Deletion
+echo "Listing all players to confirm deletion..."
 curl -s "$BASE_URL/player/" | jq
 echo "------------------------------------------------------------------"
 
-echo "✅ Test complete."
+echo "Test complete."

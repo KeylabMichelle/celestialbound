@@ -35,3 +35,22 @@ func GetAllJarsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, jars)
 }
+
+func ClickJarHandler(c *gin.Context) {
+	playerID := c.Param("player_id")
+	jarID := c.Param("jar_id")
+
+	updatedJar, err := jarService.ClickJar(playerID, jarID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Added click stars to jar",
+		"jar_id":       updatedJar.JarID,
+		"stars_stored": updatedJar.StarsStored,
+		"max_capacity": updatedJar.MaxCapacity,
+	})
+}

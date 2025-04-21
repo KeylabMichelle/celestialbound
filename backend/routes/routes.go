@@ -30,10 +30,9 @@ func SetupRoutes() *gin.Engine {
 	{
 		jarsGroup.POST("/", handlers.CreateNewJarHandler)
 		jarsGroup.GET("/", handlers.GetAllJarsHandler)
-	}
+		jarsGroup.POST("/:jar_id/click", handlers.ClickJarHandler)
 
-	// Click route
-	router.POST("/click/:player_id", handlers.ClickHandler)
+	}
 
 	return router
 }

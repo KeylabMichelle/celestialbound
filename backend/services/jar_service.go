@@ -48,3 +48,28 @@ func (JarService *JarService) GetAllJars(playerID string) ([]models.Jar, error) 
 	// Return the jars of the player
 	return playerStates[playerID].Jars, nil
 }
+
+func (JarService *JarService) ClickJar(playerID string, jarID string) (*models.Jar, error) {
+	player := playerStates[playerID]
+	if player == nil {
+		return nil, errors.New("player not found")
+	}
+
+	// Find the target jar by ID
+	var targetJar *models.Jar
+	for i := range player.Jars {
+		if player.Jars[i].JarID == jarID {
+			targetJar = &player.Jars[i]
+			break
+		}
+	}
+
+	// Add stars to the jar
+	if targetJar.StarsStored+player.StarsPerClick <= targetJar.MaxCapacity {
+		targetJar.StarsStored += player.StarsPerClick
+	} else {
+		targetJar.StarsStored = targetJar.MaxCapacity
+	}
+
+	return targetJar, nil
+}
